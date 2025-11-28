@@ -3,733 +3,438 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>IRD E-Services Portal</title>
+  <title>Aruns E-Services Portal — Final</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4fb;color:#333;height:100vh;}
-    #loginPage{display:flex;justify-content:center;align-items:center;height:100vh;background:linear-gradient(120deg,#cfd6dd,#d5e0e9);}
-    .login-box{background:#fff;padding:30px;border-radius:10px;box-shadow:0 0 20px rgba(0,0,0,0.3);width:320px;text-align:center;}
-    .login-box h2{margin-bottom:15px;color:#003366;}
-    .login-box input{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:5px;}
-    .login-box button{width:100%;padding:10px;background:#003366;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:16px;}
+    body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4fb;color:#333;min-height:100vh;display:flex;flex-direction:column;}
+    /* LOGIN */
+    #loginPage{display:flex;justify-content:center;align-items:center;flex:1;background:linear-gradient(120deg,#cfd6dd,#d5e0e9);padding:30px;}
+    .login-box{background:#fff;padding:26px;border-radius:10px;box-shadow:0 0 20px rgba(0,0,0,0.18);width:340px;text-align:center;}
+    .login-box h2{margin-bottom:12px;color:#003366;font-size:20px;}
+    .login-box input{width:100%;padding:10px;margin:8px 0;border:1px solid #cfd6e6;border-radius:6px;font-size:15px;}
+    .login-box button{width:100%;padding:10px;background:#003366;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:16px;}
     .login-box button:hover{background:#0055aa;}
-    .error-msg{color:red;font-size:13px;display:none;}
-    #mainPage{display:none;height:100vh;overflow:hidden;}
-    header{background:linear-gradient(90deg,#002b5c,#004b8d);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:8px 20px;}
-    header img{height:60px;}
+    .error-msg{color:#b00020;font-size:13px;display:none;margin-top:6px;}
+
+    /* MAIN PAGE */
+    #mainPage{display:none;flex-direction:column;min-height:100vh;}
+    header{background:linear-gradient(90deg,#001f3f,#004b8d);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:8px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.18);}
+    header img.logo{height:55px;border-radius:6px;}
     header .title{text-align:center;flex-grow:1;}
-    header .title h1{font-size:22px;}
-    .container{display:grid;grid-template-columns:250px 1fr;height:calc(100vh - 75px);}
-    .sidebar{background:#e9eff7;border-right:2px solid #c3cbe0;padding:10px;overflow-y:auto;}
-    .sidebar h3{color:#003366;margin-bottom:10px;}
-    .folder>div{cursor:pointer;padding:6px 10px;border-radius:4px;display:flex;align-items:center;}
-    .folder ul{margin-left:20px;margin-top:5px;list-style:none;display:none;}
+    header .title h1{font-size:20px;margin-bottom:4px;}
+    .time-box{
+      display:flex;flex-direction:column;align-items:center;padding:6px 12px;border-radius:10px;
+      background:linear-gradient(135deg,#003366,#0077cc);
+      border:2px solid rgba(0,255,255,0.15);
+      box-shadow:0 0 10px rgba(0,255,255,0.12);
+      min-width:130px;
+      color:#e8f7ff;
+      font-size:13px;
+    }
+    .container{display:grid;grid-template-columns:250px 1fr;flex:1;height:calc(100vh - 160px);background:transparent;}
+    .sidebar{background:#e9eff7;border-right:2px solid #c3cbe0;padding:12px;overflow-y:auto;}
+    .sidebar h3{color:#003366;margin-bottom:10px;font-size:16px;}
+    .folder>div{cursor:pointer;padding:8px 10px;border-radius:6px;display:flex;align-items:center;justify-content:space-between;color:#003366;}
+    .folder ul{margin-left:6px;margin-top:8px;list-style:none;display:none;padding-left:6px;}
     .folder.open>ul{display:block;}
-    .folder ul li a{text-decoration:none;color:#003366;display:block;padding:4px 8px;border-radius:4px;}
+    .folder ul li a{text-decoration:none;color:#003366;display:block;padding:6px 8px;border-radius:6px;}
     .folder ul li a:hover{background:#c7d7f0;}
     main{background:#fff;}
     iframe{width:100%;height:100%;border:none;}
-    footer{background:#002b5c;color:#fff;text-align:center;font-size:12px;padding:6px;}
+    /* single footer inside mainPage */
+    footer.main-footer{background:#002b5c;color:#fff;text-align:center;font-size:13px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .footer-left{display:flex;align-items:center;gap:12px;}
+    .footer-actions button{padding:8px 12px;margin-left:8px;background:#004b8d;color:#fff;border:none;border-radius:6px;cursor:pointer;}
+    .footer-actions button.restore{background:#0077cc;}
+    .footer-actions button:disabled{opacity:0.5;cursor:not-allowed;}
+
+    /* Toast */
+    #toast {
+      visibility:hidden;
+      min-width:220px;
+      max-width:360px;
+      background:linear-gradient(135deg,#003366,#00aaff);
+      color:#fff;
+      text-align:center;
+      border-radius:8px;
+      padding:12px 18px;
+      position:fixed;
+      top:20px;
+      right:20px;
+      font-size:14px;
+      box-shadow:0 0 12px rgba(0,255,255,0.18);
+      opacity:0;
+      transform:translateY(-10px);
+      transition:opacity 0.35s, transform 0.35s;
+      z-index:9999;
+    }
+    #toast.show {visibility:visible;opacity:1;transform:translateY(0);}
+    /* Dashboard card styling (iframe content has its own) */
+    @media (max-width:800px){
+      .container{grid-template-columns:1fr;}
+      .sidebar{height:auto;order:2;}
+      main{order:1;height:60vh;}
+    }
   </style>
 </head>
 <body>
 
+<!-- LOGIN PAGE -->
 <div id="loginPage">
   <div class="login-box">
-    <h2>Arun Login Portal</h2>
+    <h2>𝐋𝐨𝐠 𝐈𝐧 🔐</h2>
     <input type="text" id="username" placeholder="Username">
     <input type="password" id="password" placeholder="Password">
-    <div class="error-msg" id="error">Invalid username or password!</div>
-    <button onclick="login()">Login</button>
-    <p style="font-size:12px;margin-top:10px;">Use Info <b>Admin</b> / <b>*****</b></p>
+    <div class="error-msg" id="error">❌ Invalid Username or Password</div>
+    <button id="loginBtn">Login</button>
   </div>
 </div>
 
-<div id="mainPage">
+<!-- MAIN PAGE -->
+<div id="mainPage" aria-hidden="true">
   <header>
-    <img src="https://ird.gov.np/img/logo.png" alt="IRD Logo" onerror="this.style.display='none'">
-    <div class="title">
-      <h1>आन्तरिक राजस्व विभाग</h1>
-      <p>Inland Revenue Department, Government of Nepal</p>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Bajaj_logo.jpg" alt="Bajaj Logo">
+      <div class="time-box" aria-hidden="false">
+        <div class="eng" id="engTime">Loading...</div>
+        <div class="nep" id="nepTime">नेपाली मिति...</div>
+      </div>
     </div>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Flag_of_Nepal.svg" alt="Nepal Flag">
+
+    <div class="title">
+      <h1>🌐 𝗝𝗔𝗕𝗘𝗚𝗨𝗛𝗔𝗡𝗚 𝗠𝗨𝗟𝗧𝗜 𝗣𝗨𝗥𝗣𝗢𝗦𝗘 𝗖𝗢𝗠𝗣𝗔𝗬 𝗟𝘁𝗱.🌐</h1>
+      <p style="font-size:12px;margin-top:4px;opacity:0.9;">𝐃𝐚𝐭𝐚𝐛𝐚𝐬𝐞 𝐖𝐢𝐭𝐡 𝐂𝐥𝐨𝐮𝐝 𝐃𝐞𝐩𝐚𝐫𝐭𝐦𝐞𝐧𝐭, 𝐆𝐨𝐯𝐞𝐫𝐧𝐦𝐞𝐧𝐭 𝐨𝐟 𝐍𝐞𝐩𝐚𝐥</p>
+    </div>
+     <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Animated-nepal-flag-image-0007.gif" alt="Nepal Flag">
+     <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Small_gif.gif" alt="IRD Logo" style="height:60px;">
   </header>
 
   <div class="container">
     <div class="sidebar">
-      <h3>Online E-Services</h3>
+      <h3>𝐎𝐧𝐥𝐢𝐧𝐞 𝐄-𝐒𝐞𝐫𝐯𝐢𝐜𝐞𝐬</h3>
+
       <div class="folder">
-        <div onclick="toggleFolder(this)">📁 Integrated Tax System</div>
+        <div onclick="toggleFolder(this)">📁 𝐂𝐚𝐬𝐡 𝐑𝐞𝐜𝐨𝐫𝐝𝐬 <span style="opacity:0.6;font-size:13px;">▸</span></div>
         <ul>
-          <li><a href="https://ird.gov.np" target="contentFrame">General</a></li>
-          <li><a href="https://ird.gov.np/pan" target="contentFrame">Registration (PAN,VAT,EXCISE)</a></li>
-          <li><a href="https://ird.gov.np/vat" target="contentFrame">VAT</a></li>
+          <li><a href="#" onclick="loadEsewaForm();return false;">🗁 Cash Transaction </a></li>
+          <li><a href="#" onclick="loadEsewaForm();return false;">🗁 Statement Report </a></li>
         </ul>
       </div>
+
       <div class="folder">
-        <div onclick="toggleFolder(this)">📁 Esewa</div>
+        <div onclick="toggleFolder(this)">📁 𝐈𝐧𝐪𝐮𝐢𝐫𝐲-𝐅𝐨𝐨𝐭𝐟𝐚𝐥𝐥 <span style="opacity:0.6;font-size:13px;">▸</span></div>
         <ul>
-          <li><a href="#" onclick="loadEsewaForm()">Form Submission</a></li>
-          <li><a href="#" onclick="loadCertificate()">Download Certificate</a></li>
+         <li><a href="Online E-Services/Collector/collector-details.html" target="contentFrame">🗁 Inquiry Form</a></li>    
+         <li><a href="Online E-Services/Collector/collector-download.html" target="contentFrame">🗁 Record Download</a></li>
         </ul>
       </div>
-    <div class="folder">
-        <div onclick="toggleFolder(this)">📁 Collector Entry</div>
-        <ul>
-          <li><a href="Collector Entry/collector-entry.html" target="contentFrame">Collector Entry</a></li>
-        </ul>
-      </div>
-    
+
       <div class="folder">
-        <div onclick="toggleFolder(this)">📁 Banks</div>
+        <div onclick="toggleFolder(this)">📁 𝐕𝐞𝐡𝐢𝐜𝐥𝐞 𝐎𝐫𝐝𝐞𝐫 𝐑𝐞𝐜𝐨𝐫𝐝 <span style="opacity:0.6;font-size:13px;">▸</span></div>
         <ul>
-          <li><a href="Online E-Services/Banks/bank-statement-update.html" target="contentFrame">Bank Statement Updater</a></li>\n          <li><a href="Online E-Services/Banks/statement-download.html" target="contentFrame">Statement Download</a></li>
-        </ul>
-      </div>
-      <div class="folder">
-        <div onclick="toggleFolder(this)">📁 Collector</div>
-        <ul>
-          <li><a href="Online E-Services/Collector/collector-details.html" target="contentFrame">Collector Details</a></li>\n          <li><a href="Online E-Services/Collector/collector-download.html" target="contentFrame">Collector Download</a></li>
+          <li><a href="Online E-Services/Banks/bank-statement-update.html" target="contentFrame">🗁 Order Updates</a></li>   
+          <li><a href="Online E-Services/Banks/statement-download.html" target="contentFrame">🗁 Order Statement </a></li>
         </ul>
       </div>
     </div>
-    <main><iframe name="contentFrame" id="contentFrame"></iframe></main>
+
+    <main>
+      <iframe name="contentFrame" id="contentFrame" title="Content Frame"></iframe>
+    </main>
   </div>
 
-  <footer>© 2025 Inland Revenue Department, Government of Nepal</footer>
-</div>
+  <footer class="main-footer">
+    <div class="footer-left">
+      <div>© 2025 Database With Cloud Department</div>
+      <div style="font-size:12px;opacity:0.85;margin-left:8px;">(Logged in as <strong id="whoami">admin</strong>)</div>
+    </div>
 
-<script>
-function login(){
-  const u=document.getElementById('username').value.trim();
-  const p=document.getElementById('password').value.trim();
-  if(u==='Admin'&&p==='Admin123'){
-    document.getElementById('loginPage').style.display='none';
-    document.getElementById('mainPage').style.display='block';
-  }else{
-    const e=document.getElementById('error');
-    e.style.display='block';
-    setTimeout(()=>e.style.display='none',3000);
-  }
-}
-function toggleFolder(el){el.parentElement.classList.toggle('open');}
-
-function loadEsewaForm(){
-const f=document.getElementById('contentFrame');
-f.srcdoc=`<html><head><meta charset='utf-8'><title>Esewa Form</title>
-<style>
-body{font-family:"Segoe UI",sans-serif;background:#f4f6fb;padding:25px;}
-.form-container{max-width:820px;margin:auto;}
-form{background:#fff;padding:25px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
-form h2{text-align:center;color:#003366;margin-bottom:18px;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
-label{font-weight:600;color:#003366;}
-input,select{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;}
-.actions{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:15px;}
-button{padding:10px 16px;border:none;border-radius:6px;cursor:pointer;font-weight:600;}
-button.small{font-size:14px;}
-button.export{background:#28a745;color:#fff;}
-button.secondary{background:#5a7fa8;color:#fff;}
-button.submit{background:#003366;color:#fff;}
-.table-wrap{margin-top:25px;overflow:auto;}
-table{width:100%;border-collapse:collapse;}
-th,td{border:1px solid #dee2e6;padding:10px;text-align:center;font-size:14px;}
-th{background:#003366;color:#fff;}
-.btn-small{padding:5px 10px;border-radius:4px;font-size:13px;}
-.edit{background:#f0ad4e;color:#fff;border:none;}
-.del{background:#d9534f;color:#fff;border:none;}
-.search{margin-top:10px;padding:8px;width:220px;border-radius:6px;border:1px solid #ccc;}
-.count{font-size:13px;color:#333;margin-top:5px;}
-.filter-buttons{margin-top:10px;}
-.filter-buttons button{padding:6px 12px;margin-right:6px;border:none;border-radius:5px;background:#5a7fa8;color:#fff;cursor:pointer;font-size:13px;}
-.filter-buttons button:hover{background:#003366;}
-</style></head><body>
-<div class='form-container'>
-<form id='esewaForm'>
-<h2>Esewa Form Submission</h2>
-<div class='grid'>
-<div><label>Date</label><input type='date' id='date' required></div>
-<div><label>Esewa TRX Code</label><input type='text' id='trx' placeholder='Enter Esewa Transaction Code' required></div>
-<div><label>Sender Name</label><input type='text' id='sender' placeholder='Enter Sender Name' required></div>
-<div><label>Amount (NPR)</label><input type='number' id='amount' placeholder='Enter Amount' min='0' required></div>
-<div><label>Status</label><select id='status'><option>Pending</option><option>Approved</option><option>Failed</option></select></div>
-</div>
-<div class='actions'>
-<div><button type='button' id='exportCSV' class='small export'>Export CSV</button> <button type='button' id='exportXLS' class='small export'>Export Excel (.xls)</button></div>
-<div><button type='reset' class='small secondary'>Reset</button> <button type='submit' id='submitBtn' class='small submit'>Submit</button></div>
-</div>
-</form>
-
-<!-- Quick filter buttons -->
-<div class="filter-buttons">
-  <button onclick="render('Pending')">Pending</button>
-  <button onclick="render('Approved')">Approved</button>
-  <button onclick="render('Failed')">Failed</button>
-  <button onclick="render('')">All</button>
-</div>
-
-<div>
-  <input type='text' id='searchInput' class='search' placeholder='Search TRX / Sender / Status / Date...'>
-  <div class='count'>Total entries: <span id='totalCount'>0</span></div>
-</div>
-<div class='table-wrap'><table id='dataTable'><thead><tr><th>#</th><th>Date</th><th>TRX Code</th><th>Sender</th><th>Amount (NPR)</th><th>Status</th><th>Actions</th></tr></thead><tbody></tbody></table></div>
-</div>
-
-<script>
-const STORAGE_KEY='esewa_entries_v1';
-let entries=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
-let editId=null;
-const form=document.getElementById('esewaForm');
-const dateEl=document.getElementById('date');
-const trxEl=document.getElementById('trx');
-const senderEl=document.getElementById('sender');
-const amountEl=document.getElementById('amount');
-const statusEl=document.getElementById('status');
-const tableBody=document.querySelector('#dataTable tbody');
-const totalCountEl=document.getElementById('totalCount');
-const searchInput=document.getElementById('searchInput');
-
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(entries));}
-
-function render(filter=''){
-  const q=filter.trim().toLowerCase();
-  let list = entries.filter(e=>{
-    if(!q) return true;
-    // match against trx, sender, status, date, amount
-    const trx = (e.trx||'').toLowerCase();
-    const sender = (e.sender||'').toLowerCase();
-    const status = (e.status||'').toLowerCase();
-    const date = (e.date||'').toLowerCase();
-    const amount = String(e.amount || '').toLowerCase();
-    return trx.includes(q) || sender.includes(q) || status.includes(q) || date.includes(q) || amount.includes(q);
-  });
-
-  tableBody.innerHTML='';
-  // show latest first
-  list.slice().reverse().forEach((e,i)=>{
-    tableBody.innerHTML+=\`<tr>
-      <td>\${i+1}</td>
-      <td>\${e.date}</td>
-      <td>\${e.trx}</td>
-      <td>\${e.sender || ''}</td>
-      <td>\${Number(e.amount).toLocaleString()}</td>
-      <td>\${e.status}</td>
-      <td><button class='btn-small edit' data-id='\${e.id}'>Edit</button> <button class='btn-small del' data-id='\${e.id}'>Delete</button></td>
-    </tr>\`;
-  });
-  totalCountEl.textContent=list.length;
-}
-
-render();
-
-form.addEventListener('submit',e=>{
-  e.preventDefault();
-  const d={
-    id: editId || ('id_'+Date.now()),
-    date: dateEl.value,
-    trx: trxEl.value.trim(),
-    sender: senderEl.value.trim(),
-    amount: Number(amountEl.value) || 0,
-    status: statusEl.value,
-    createdAt: Date.now()
-  };
-  if(!d.date || !d.trx || !d.sender){
-    alert('Please fill Date, TRX and Sender fields');
-    return;
-  }
-  if(editId){
-    entries = entries.map(x=> x.id===editId ? d : x);
-    editId = null;
-    alert('Entry updated!');
-    document.getElementById('submitBtn').textContent='Submit';
-  }else{
-    entries.push(d);
-    alert('Form Submitted!');
-  }
-  save();
-  form.reset();
-  render(searchInput.value.trim());
-});
-
-tableBody.addEventListener('click',e=>{
-  if(e.target.classList.contains('edit')){
-    const id=e.target.dataset.id;
-    const item=entries.find(x=>x.id===id);
-    if(item){
-      dateEl.value=item.date || '';
-      trxEl.value=item.trx || '';
-      senderEl.value=item.sender || '';
-      amountEl.value=item.amount || '';
-      statusEl.value=item.status || 'Pending';
-      editId=id;
-      document.getElementById('submitBtn').textContent='Update';
-      form.scrollIntoView({behavior:'smooth'});
-    }
-  }
-  if(e.target.classList.contains('del')){
-    if(confirm('Delete this entry?')){
-      entries = entries.filter(x=>x.id!==e.target.dataset.id);
-      save();
-      render(searchInput.value.trim());
-    }
-  }
-});
-
-searchInput.addEventListener('input',()=>render(searchInput.value.trim()));
-
-// CSV Export
-document.getElementById('exportCSV').addEventListener('click',()=>{
-  if(entries.length===0){alert('No data');return;}
-  const header=['Date','TRX Code','Sender','Amount','Status'];
-  // make rows descending (latest first)
-  const rows = entries.slice().reverse().map(e=>[
-    e.date,
-    e.trx,
-    e.sender || '',
-    e.amount,
-    e.status
-  ]);
-  // CSV escaping: wrap each field that contains comma or quote in double quotes and escape quotes
-  const csv = [header, ...rows].map(r => r.map(field => {
-    const s = String(field ?? '');
-    if(s.includes('"')) return '"' + s.replace(/"/g,'""') + '"';
-    if(s.includes(',') || s.includes('\\n')) return '"' + s + '"';
-    return s;
-  }).join(',')).join('\\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='esewa_entries.csv';a.click();URL.revokeObjectURL(url);
-});
-
-// XLS Export (simple HTML table)
-document.getElementById('exportXLS').addEventListener('click',()=>{
-  if(entries.length===0){alert('No data');return;}
-  let html='<table border=1><tr><th>Date</th><th>TRX Code</th><th>Sender</th><th>Amount</th><th>Status</th></tr>';
-  entries.slice().reverse().forEach(e=>{
-    html+=\`<tr><td>\${e.date}</td><td>\${e.trx}</td><td>\${(e.sender||'')}</td><td>\${e.amount}</td><td>\${e.status}</td></tr>\`;
-  });
-  html+='</table>';
-  const blob=new Blob([html],{type:'application/vnd.ms-excel'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='esewa_entries.xls';a.click();URL.revokeObjectURL(url);
-});
-<\/script></body></html>`;
-}
-
-function loadCertificate(){
-const f=document.getElementById('contentFrame');
-f.srcdoc=`<html><head><meta charset='utf-8'><title>Certificate</title>
-<style>body{font-family:Arial;background:#fff;padding:20px;}
-h2{text-align:center;color:#003366;margin-bottom:10px;}
-button{padding:8px 12px;background:#003366;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-bottom:10px;}
-table{width:100%;border-collapse:collapse;}
-th,td{border:1px solid:#000;padding:6px;text-align:center;}
-th{background:#f0f0f0;}
-@media print{button{display:none}}</style></head><body>
-<h2>Esewa Form Submission Certificate</h2>
-<button onclick="window.print()">📄 Download Certificate (PDF)</button>
-<table id='tbl'><thead><tr><th>#</th><th>Date</th><th>TRX Code</th><th>Sender</th><th>Amount (NPR)</th><th>Status</th></tr></thead><tbody></tbody></table>
-<script>
-const arr=JSON.parse(localStorage.getItem('esewa_entries_v1')||'[]');
-const tb=document.querySelector('#tbl tbody');
-if(!arr || arr.length==0){
-  tb.innerHTML='<tr><td colspan=6>No records found</td></tr>';
-}else{
-  // show latest first
-  arr.slice().reverse().forEach((e,i)=>{
-    const amountFormatted = Number(e.amount || 0).toLocaleString();
-    tb.innerHTML+=\`<tr><td>\${i+1}</td><td>\${e.date}</td><td>\${e.trx}</td><td>\${e.sender||''}</td><td>\${amountFormatted}</td><td>\${e.status}</td></tr>\`;
-  });
-}
-<\/script></body></html>`;
-}
-</script>
-
-<!-- Firebase Sync module: loads firebase-sync.js and attempts to sync local keys with Firestore.
-     IMPORTANT: Open firebase-sync.js and replace firebaseConfig with your Firebase project's config.
--->
-<script type="module">
-import { initFirebase, loadKey, saveKey, subscribeKey } from './firebase-sync.js';
-
-(async ()=>{
-  try{
-    await initFirebase();
-  }catch(e){
-    console.warn('Firebase init failed (please edit firebase-sync.js and add config).', e);
-    return;
-  }
-
-  // Map of localStorage keys used by this app and behavior
-  const syncKeys = [
-    'bank_statement_html_v2',
-    'esewa_entries_v1',
-    'collectorData_v_final',
-    'denominationData_v_final',
-    'collectorHistory_v1',
-    'collectorNotes_v_final',
-    'autoSaveEnabled_v_final'
-  ];
-
-  // On load: try load each key from Firestore and populate localStorage if found.
-  for(const k of syncKeys){
-    try{
-      const v = await loadKey(k);
-      if(v!==null){
-        // Store as string in localStorage (same shape as original apps expect)
-        localStorage.setItem(k, JSON.stringify(v));
-        console.log('Loaded',k,'from Firestore');
-      }
-    }catch(e){ console.warn('Load key error',k,e); }
-  }
-
-  // Setup real-time subscriptions: when remote changes, update localStorage (and trigger storage event)
-  for(const k of syncKeys){
-    try{
-      subscribeKey(k, (val)=>{
-        if(val===null){ return; }
-        localStorage.setItem(k, JSON.stringify(val));
-        // fire a storage-like event for other frames
-        try{ window.dispatchEvent(new Event('storage')); }catch(e){}
-        console.log('Realtime update applied for',k);
-      });
-    }catch(e){ console.warn('Subscribe failed for',k,e); }
-  }
-
-  // Watch localStorage changes and push them to Firestore for the keys listed
-  window.addEventListener('beforeunload', async ()=>{
-    for(const k of syncKeys){
-      const raw = localStorage.getItem(k);
-      if(raw===null) continue;
-      try{
-        const parsed = JSON.parse(raw);
-        await saveKey(k, parsed);
-        console.log('Saved on unload',k);
-      }catch(e){ console.warn('Save on unload failed',k,e); }
-    }
-  });
-
-  // Also listen to custom event to force-save a key: window.dispatchEvent(new CustomEvent('fsave',{detail:{key:'...',value:...}}))
-  window.addEventListener('fsave', async (ev)=>{
-    const {key, value} = ev.detail || {};
-    if(!key) return;
-    try{ await saveKey(key, value); console.log('Saved key via fsave',key); }catch(e){console.warn(e);}
-  });
-
-})();
-</script>
-</body>
-</html>
-
-</body>
-      <button id="backupBtn">📦 Backup to Google Drive</button>
-      <button id="restoreBtn">🔁 Restore from Google Drive</button>
+    <div class="footer-actions" aria-live="polite">
+      <button id="backupBtn" title="Create Backup">💾 Backup</button>
+      <button id="restoreBtn" class="restore" title="Restore from Backup">♻️ Restore</button>
+      <button id="logoutBtn" style="background:#b02a2a;margin-left:8px;">🔒 Logout</button>
     </div>
   </footer>
 </div>
 
+<!-- TOAST -->
+<div id="toast" role="status" aria-live="polite">Status</div>
+
 <script>
-function login(){
+/* ===========================
+   Utility & App Constants
+   =========================== */
+const APP_KEYS = [
+  'esewa_entries_v1',
+  'collectorData_v_final',
+  'bank_statement_html_v2'
+];
+// Some users might store plain objects/strings; ensure restore handles that safely.
+
+/* ===========================
+   Toast helper
+   =========================== */
+function showToast(msg, ms=3200){
+  const t=document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), ms);
+}
+
+/* ===========================
+   LOGIN / LOGOUT
+   =========================== */
+document.getElementById('loginBtn').addEventListener('click', ()=>{
   const u=document.getElementById('username').value.trim();
   const p=document.getElementById('password').value.trim();
-  if(u==='Admin'&&p==='Admin123'){
+  const error=document.getElementById('error');
+  if(u.toLowerCase()==='admin' && p==='Admin123'){
     document.getElementById('loginPage').style.display='none';
-    document.getElementById('mainPage').style.display='block';
-  }else{
-    const e=document.getElementById('error');
-    e.style.display='block';
-    setTimeout(()=>e.style.display='none',3000);
+    document.getElementById('mainPage').style.display='flex';
+    document.getElementById('mainPage').setAttribute('aria-hidden','false');
+    document.getElementById('whoami').textContent = u;
+    showToast("✅ Welcome, Admin!");
+    loadDashboard();
+  } else {
+    error.style.display='block';
+    setTimeout(()=>error.style.display='none',3000);
+  }
+});
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  // simple logout - show login again
+  document.getElementById('username').value='';
+  document.getElementById('password').value='';
+  document.getElementById('mainPage').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('mainPage').setAttribute('aria-hidden','true');
+  document.getElementById('contentFrame').srcdoc = '';
+  showToast("🔒 Logged out");
+});
+
+/* ===========================
+   Header Clock & Nepali date
+   =========================== */
+function updateHeaderTime(){
+  const now=new Date();
+  const eng=now.toLocaleString('en-GB',{weekday:'short',year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('engTime').textContent=eng;
+  document.getElementById('nepTime').textContent=getNepaliDateTime(now);
+}
+function getNepaliDateTime(date){
+  const npMonths=['बैशाख','जेठ','असार','साउन','भदौ','असोज','कात्तिक','मंसिर','पुष','माघ','फागुन','चैत'];
+  const npNumbers={'0':'०','1':'१','2':'२','3':'३','4':'४','5':'५','6':'६','7':'७','8':'८','9':'९'};
+  let y=date.getFullYear()+57;
+  let m=(date.getMonth()+1+8)%12;if(m===0)m=12;
+  let d=date.getDate();
+  const npDate=`${npMonths[m-1]} ${d}, ${y}`;
+  const h=String(date.getHours()).padStart(2,'0').replace(/[0-9]/g,d=>npNumbers[d]);
+  const mi=String(date.getMinutes()).padStart(2,'0').replace(/[0-9]/g,d=>npNumbers[d]);
+  const s=String(date.getSeconds()).padStart(2,'0').replace(/[0-9]/g,d=>npNumbers[d]);
+  return npDate.replace(/[0-9]/g,d=>npNumbers[d])+" ("+h+":"+mi+":"+s+")";
+}
+setInterval(updateHeaderTime,1000);
+updateHeaderTime();
+
+/* ===========================
+   Sidebar toggles & iframe loaders
+   =========================== */
+function toggleFolder(el){ el.parentElement.classList.toggle('open'); }
+
+function loadEsewaForm(){ 
+  const f=document.getElementById('contentFrame');
+  f.srcdoc = `
+    <html><head><meta charset="utf-8"><title>Esewa Form</title>
+    <style>body{font-family:Segoe UI;padding:20px;background:linear-gradient(135deg,#f6fbff,#ffffff);}h3{color:#003366}</style>
+    </head><body>
+    <h3>Esewa Form Section</h3>
+    <p>Existing code placeholder — integrate your existing form here.</p>
+    </body></html>`;
+}
+function loadCollectorDetails(){
+  const f=document.getElementById('contentFrame');
+  f.srcdoc = `<html><head><meta charset="utf-8"><title>Collector Details</title>
+    <style>body{font-family:Segoe UI;padding:18px}</style></head><body>
+    <h3>Collector Details</h3><p>Collector details placeholder.</p>
+    </body></html>`;
+}
+function loadCollectorDownload(){
+  const f=document.getElementById('contentFrame');
+  f.srcdoc = `<html><head><meta charset="utf-8"><title>Collector Download</title>
+    <style>body{font-family:Segoe UI;padding:18px}</style></head><body>
+    <h3>Collector Record Download</h3><p>Download interface placeholder.</p>
+    </body></html>`;
+}
+function loadBankUpdate(){
+  const f=document.getElementById('contentFrame');
+  f.srcdoc = `<html><head><meta charset="utf-8"><title>Bank Update</title>
+    <style>body{font-family:Segoe UI;padding:18px}</style></head><body>
+    <h3>Bank Update</h3><p>Bank update placeholder.</p>
+    </body></html>`;
+}
+function loadStatementDownload(){
+  const f=document.getElementById('contentFrame');
+  f.srcdoc = `<html><head><meta charset="utf-8"><title>Statement Download</title>
+    <style>body{font-family:Segoe UI;padding:18px}</style></head><body>
+    <h3>Statement Download</h3><p>Statement download placeholder.</p>
+    </body></html>`;
+}
+
+/* ===========================
+   DASHBOARD (loads into iframe)
+   =========================== */
+function safeParseLocal(key){
+  try{
+    const raw = localStorage.getItem(key);
+    if(raw === null) return [];
+    const parsed = JSON.parse(raw);
+    // If parsed is array-like, return as array
+    if(Array.isArray(parsed)) return parsed;
+    // If it's an object with values, convert to array of entries
+    if(parsed && typeof parsed === 'object') return Object.values(parsed);
+    // fallback - wrap primitive
+    return [parsed];
+  }catch(e){
+    return [];
   }
 }
-function toggleFolder(el){el.parentElement.classList.toggle('open');}
-</script>
+function loadDashboard(){
+  const f=document.getElementById('contentFrame');
+  const esewa = safeParseLocal('esewa_entries_v1');
+  const collector = safeParseLocal('collectorData_v_final');
+  const bank = safeParseLocal('bank_statement_html_v2');
 
-<!-- Firebase Sync kept active -->
-<script type="module">
-import { initFirebase, loadKey, saveKey, subscribeKey } from './firebase-sync.js';
-(async ()=>{
- try{await initFirebase();}catch(e){console.warn('Firebase init failed');return;}
- const syncKeys=['bank_statement_html_v2','esewa_entries_v1','collectorData_v_final'];
- for(const k of syncKeys){
-   try{const v=await loadKey(k);if(v!==null)localStorage.setItem(k,JSON.stringify(v));}catch(e){}
- }
- window.addEventListener('beforeunload',async()=>{
-   for(const k of syncKeys){
-     const raw=localStorage.getItem(k);if(!raw)continue;
-     try{await saveKey(k,JSON.parse(raw));}catch(e){}
-   }
- });
+  // Build simple dashboard HTML and inject counts
+  const doc = `
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Dashboard</title>
+      <style>body{font-family:Segoe UI;padding:30px;background:linear-gradient(135deg,#dfe9f3,#ffffff);}h2{text-align:center;color:#002b5c;margin-bottom:20px;} .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;} .card{background:linear-gradient(135deg,#004e92,#000428);color:#fff;border-radius:12px;padding:18px;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,0.15);} .card h3{margin-bottom:10px;font-size:18px;} .num{font-size:28px;font-weight:bold;color:#00e0ff;text-shadow:0 0 10px rgba(0,255,255,0.2);} .muted{font-size:13px;opacity:0.85;margin-top:8px;}</style>
+    </head>
+    <body>
+      <h2>📊 Dashboard Summary</h2>
+      <div class="cards">
+        <div class="card"><h3>Esewa Records</h3><div class="num">${esewa.length}</div><div class="muted">Key: esewa_entries_v1</div></div>
+        <div class="card"><h3>Collector Entries</h3><div class="num">${collector.length}</div><div class="muted">Key: collectorData_v_final</div></div>
+        <div class="card"><h3>Bank Statements</h3><div class="num">${bank.length}</div><div class="muted">Key: bank_statement_html_v2</div></div>
+      </div>
+      <script>
+        // allow parent to call functions if needed
+        window.addEventListener('message', e => {
+          if(e.data && e.data.type === 'refreshCounts'){
+            location.reload();
+          }
+        });
+      <\/script>
+    </body>
+    </html>
+  `;
+  f.srcdoc = doc;
+}
+
+/* ===========================
+   BACKUP / RESTORE
+   =========================== */
+
+// Create a backup JSON containing only APP_KEYS (present or empty)
+function backupData(){
+  try{
+    const backup = {};
+    APP_KEYS.forEach(k=>{
+      const raw = localStorage.getItem(k);
+      // keep as stored (string or null). If null, store empty array
+      if(raw === null){
+        backup[k] = []; // ensure shape is array for missing keys
+      } else {
+        try{
+          // attempt to parse to store as structured JSON in file
+          backup[k] = JSON.parse(raw);
+        }catch(e){
+          // store raw string if not JSON
+          backup[k] = raw;
+        }
+      }
+    });
+
+    const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Backup.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast("✅ Backup created (Backup.json)");
+  }catch(err){
+    console.error('Backup error', err);
+    showToast("❌ Backup failed");
+  }
+}
+
+// Restore: open file picker, parse, set localStorage keys (overwrite), then refresh UI
+function restoreData(){
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json,application/JSON';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try{
+        const data = JSON.parse(ev.target.result);
+        // Only set keys that are in APP_KEYS to avoid accidental overwrite
+        APP_KEYS.forEach(k=>{
+          if(typeof data[k] !== 'undefined'){
+            // store as stringified JSON so safeParseLocal works
+            try{
+              localStorage.setItem(k, JSON.stringify(data[k]));
+            }catch(setErr){
+              // fallback to storing as string
+              localStorage.setItem(k, String(data[k]));
+            }
+          } else {
+            // if backup lacked key, ensure key exists as empty array string
+            localStorage.setItem(k, JSON.stringify([]));
+          }
+        });
+        showToast("♻️ Restore completed");
+        // Refresh dashboard (iframe) by reloading its srcdoc
+        // If dashboard is open, reload; else load dashboard
+        loadDashboard();
+        // Also send a message to iframe to refresh in case the iframe is same origin (it is srcdoc)
+        const f = document.getElementById('contentFrame');
+        try{
+          f.contentWindow.postMessage({type:'refreshCounts'}, '*');
+        }catch(ignore){}
+      }catch(err){
+        console.error('Restore parse error', err);
+        showToast("❌ Restore failed (invalid file)");
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+/* Attach to footer buttons */
+document.getElementById('backupBtn').addEventListener('click', backupData);
+document.getElementById('restoreBtn').addEventListener('click', restoreData);
+
+/* ===========================
+   Init: default dashboard content
+   =========================== */
+// prefill localStorage with arrays if not present (safe default, optional)
+(function ensureDefaults(){
+  APP_KEYS.forEach(k=>{
+    if(localStorage.getItem(k) === null){
+      // leave empty by default to avoid creating unnecessary persisted data unless user wants
+      // but for stable UI we can set [] so counts show 0 consistently
+      localStorage.setItem(k, JSON.stringify([]));
+    }
+  });
 })();
 </script>
-
-<!-- === Google Drive Backup + Auto-Restore (final fixed version) === -->
-<script src="https://apis.google.com/js/api.js"></script>
-<script>
-const CLIENT_ID = '43860508611-ki9ekbtvguadckha02e7mbclmf6kth8d.apps.googleusercontent.com';
-const API_KEY   = 'AQ.Ab8RN6KCDvZp4GEywFTH09wiqTtH800CRWXsNk0gSKbnnZzWQA';
-const FOLDER_ID = '1EwdaBNjfhQp4X-4tCuEdxOOYg_DM2WEj';
-const SCOPES    = 'https://www.googleapis.com/auth/drive.file';
-
-let gapiReady = false;
-
-/* --- Initialize Google API client properly --- */
-function initGapi(){
-  gapi.load('client:auth2', async () => {
-    try {
-      await gapi.client.init({
-        apiKey: API_KEY,
-        clientId: CLIENT_ID,
-        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
-        scope: SCOPES
-      });
-      gapiReady = true;
-      console.log("✅ GAPI initialized and ready");
-    } catch (e) {
-      console.error("❌ GAPI init error", e);
-      alert("❌ Google API initialization failed. Check console.");
-    }
-  });
-}
-initGapi();
-/* --- Ensure user is signed in --- */
-async function ensureSignedIn(){
-  if(!gapiReady){
-    throw new Error("Google API not initialized yet. Wait a few seconds and try again.");
-  }
-  const auth = gapi.auth2.getAuthInstance();
-  if(!auth){ throw new Error("Google Auth not initialized properly"); }
-  if(!auth.isSignedIn.get()){ await auth.signIn(); }
-  return auth.currentUser.get().getAuthResponse(true).access_token;
-}
-
-// Helper that waits until gapiReady === true
-async function waitForGapiReady() {
-  let retries = 0;
-  while(!gapiReady && retries < 20) {  // wait up to ~10 s
-    await new Promise(r => setTimeout(r, 500));
-    retries++;
-  }
-  if(!gapiReady) throw new Error("Google API still not ready after waiting");
-}
-
-// Wrap both buttons so they wait automatically
-document.getElementById("backupBtn").addEventListener("click", async () => {
-  try {
-    await waitForGapiReady();
-    await uploadBackupToDrive();
-  } catch (e) {
-    alert("❌ " + e.message);
-  }
-});
-
-document.getElementById("restoreBtn").addEventListener("click", async () => {
-  try {
-    await waitForGapiReady();
-    await autoRestoreFromDrive();
-  } catch (e) {
-    alert("❌ " + e.message);
-  }
-});
-
-
-/* --- Backup all localStorage to Drive --- */
-async function uploadBackupToDrive(){
-  try {
-    const accessToken = await ensureSignedIn();
-    const allData = {};
-    for(let i=0;i<localStorage.length;i++){
-      const k = localStorage.key(i);
-      allData[k] = localStorage.getItem(k);
-    }
-    const blob = new Blob([JSON.stringify(allData,null,2)],{type:"application/json"});
-    const metadata = {name:"backup_"+new Date().toISOString().split("T")[0]+".json",parents:[FOLDER_ID]};
-    const form = new FormData();
-    form.append("metadata", new Blob([JSON.stringify(metadata)],{type:"application/json"}));
-    form.append("file", blob);
-
-    const res = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id",{
-      method:"POST",
-      headers:{Authorization:"Bearer "+accessToken},
-      body:form
-    });
-    const data = await res.json();
-    alert("✅ Backup सफलतापूर्वक Drive मा Save भयो!");
-    console.log("Uploaded:",data);
-  } catch(e) {
-    console.error("Backup error:", e);
-    alert("❌ Backup असफल: " + e.message);
-  }
-}
-
-/* --- Auto restore from most recent backup --- */
-async function autoRestoreFromDrive(){
-  try {
-    const accessToken = await ensureSignedIn();
-    const q = encodeURIComponent(`'${FOLDER_ID}' in parents and name contains 'backup_' and mimeType='application/json'`);
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&orderBy=createdTime desc&pageSize=1&fields=files(id,name)`,
-      {headers:{Authorization:"Bearer "+accessToken}});
-    const json = await res.json();
-    if(!json.files || json.files.length===0){
-      alert("❌ कुनै Backup फाइल भेटिएन");
-      return;
-    }
-    const fileId = json.files[0].id;
-    const fileRes = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
-      {headers:{Authorization:"Bearer "+accessToken}});
-    const backupData = await fileRes.json();
-
-    for(const [k,v] of Object.entries(backupData)){
-      try {
-        const existing = localStorage.getItem(k);
-        if(existing){
-          let oldVal, newVal;
-          try{oldVal=JSON.parse(existing);}catch{oldVal=existing;}
-          try{newVal=JSON.parse(v);}catch{newVal=v;}
-          if(Array.isArray(oldVal)&&Array.isArray(newVal)){
-            const ids = new Set(oldVal.map(e=>e.id));
-            const merged = [...oldVal,...newVal.filter(e=>!ids.has(e.id))];
-            localStorage.setItem(k,JSON.stringify(merged));
-          } else if(typeof oldVal==='object'&&typeof newVal==='object'){
-            localStorage.setItem(k,JSON.stringify({...oldVal,...newVal}));
-          } else {
-            localStorage.setItem(k,JSON.stringify(newVal));
-          }
-        } else {
-          localStorage.setItem(k,v);
-        }
-      } catch(err){
-        console.warn("Restore merge failed",k,err);
-      }
-    }
-    alert("🔁 Restore पूरा भयो (latest backup बाट)!");
-  } catch(e){
-    console.error("Restore error:", e);
-    alert("❌ Restore असफल: " + e.message);
-  }
-}
-
-/* --- Button listeners --- */
-document.getElementById("backupBtn").addEventListener("click", uploadBackupToDrive);
-document.getElementById("restoreBtn").addEventListener("click", autoRestoreFromDrive);
-</script>
-<!-- === End Google Drive Backup + Auto-Restore === -->
-
-<!-- === Google Drive Backup + Auto-Restore (stable version) === -->
-<script src="https://apis.google.com/js/api.js"></script>
-<script>
-const CLIENT_ID='43860508611-ki9ekbtvguadckha02e7mbclmf6kth8d.apps.googleusercontent.com';
-const API_KEY='AQ.Ab8RN6KCDvZp4GEywFTH09wiqTtH800CRWXsNk0gSKbnnZzWQA';
-const FOLDER_ID='1EwdaBNjfhQp4X-4tCuEdxOOYg_DM2WEj';
-const SCOPES='https://www.googleapis.com/auth/drive.file';
-
-let gapiReady=false;
-
-/* --- initialize and mark ready --- */
-function initGapi(){
-  return new Promise(resolve=>{
-    gapi.load('client:auth2', async ()=>{
-      try{
-        await gapi.client.init({
-          apiKey:API_KEY,
-          clientId:CLIENT_ID,
-          discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
-          scope:SCOPES
-        });
-        gapiReady=true;
-        console.log("✅ Google API initialized");
-        resolve();
-      }catch(e){console.error("❌ GAPI init error",e);}
-    });
-  });
-}
-window.addEventListener("load",initGapi);
-
-/* --- ensure sign-in --- */
-async function ensureSignedIn(){
-  if(!gapiReady) throw new Error("Google API not ready yet.");
-  const auth=gapi.auth2.getAuthInstance();
-  if(!auth) throw new Error("Auth instance missing.");
-  if(!auth.isSignedIn.get()) await auth.signIn();
-  return auth.currentUser.get().getAuthResponse(true).access_token;
-}
-
-/* --- backup --- */
-async function uploadBackupToDrive(){
-  try{
-    const accessToken=await ensureSignedIn();
-    const allData={};
-    for(let i=0;i<localStorage.length;i++){
-      const k=localStorage.key(i);allData[k]=localStorage.getItem(k);
-    }
-    const blob=new Blob([JSON.stringify(allData,null,2)],{type:"application/json"});
-    const metadata={name:"backup_"+new Date().toISOString().split("T")[0]+".json",parents:[FOLDER_ID]};
-    const form=new FormData();
-    form.append("metadata",new Blob([JSON.stringify(metadata)],{type:"application/json"}));
-    form.append("file",blob);
-    const res=await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id",{
-      method:"POST",headers:{Authorization:"Bearer "+accessToken},body:form});
-    const data=await res.json();
-    alert("✅ Backup सफलतापूर्वक Drive मा Save भयो!");
-    console.log("Uploaded:",data);
-  }catch(e){
-    console.error("Backup error",e);
-    alert("❌ Backup असफल: "+e.message);
-  }
-}
-
-/* --- restore --- */
-async function autoRestoreFromDrive(){
-  try{
-    const accessToken=await ensureSignedIn();
-    const q=encodeURIComponent(`'${FOLDER_ID}' in parents and name contains 'backup_' and mimeType='application/json'`);
-    const res=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&orderBy=createdTime desc&pageSize=1&fields=files(id,name)`,
-      {headers:{Authorization:"Bearer "+accessToken}});
-    const json=await res.json();
-    if(!json.files||json.files.length===0){alert("❌ कुनै Backup फाइल भेटिएन");return;}
-    const fileId=json.files[0].id;
-    const fileRes=await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
-      {headers:{Authorization:"Bearer "+accessToken}});
-    const backupData=await fileRes.json();
-    for(const [k,v] of Object.entries(backupData)){
-      try{
-        const existing=localStorage.getItem(k);
-        if(existing){
-          let oldVal,newVal;
-          try{oldVal=JSON.parse(existing);}catch{oldVal=existing;}
-          try{newVal=JSON.parse(v);}catch{newVal=v;}
-          if(Array.isArray(oldVal)&&Array.isArray(newVal)){
-            const ids=new Set(oldVal.map(e=>e.id));
-            const merged=[...oldVal,...newVal.filter(e=>!ids.has(e.id))];
-            localStorage.setItem(k,JSON.stringify(merged));
-          }else if(typeof oldVal==='object'&&typeof newVal==='object'){
-            localStorage.setItem(k,JSON.stringify({...oldVal,...newVal}));
-          }else{
-            localStorage.setItem(k,JSON.stringify(newVal));
-          }
-        }else{localStorage.setItem(k,v);}
-      }catch(err){console.warn("Merge failed",k,err);}
-    }
-    alert("🔁 Restore पूरा भयो (latest backup बाट)!");
-  }catch(e){
-    console.error("Restore error",e);
-    alert("❌ Restore असफल: "+e.message);
-  }
-}
-
-/* --- buttons wait for ready --- */
-async function waitForReady(){
-  let t=0;
-  while(!gapiReady&&t<20){await new Promise(r=>setTimeout(r,500));t++;}
-  if(!gapiReady) throw new Error("Google API never loaded.");
-}
-document.getElementById("backupBtn").addEventListener("click",async()=>{
-  await waitForReady();await uploadBackupToDrive();
-});
-document.getElementById("restoreBtn").addEventListener("click",async()=>{
-  await waitForReady();await autoRestoreFromDrive();
-});
-</script>
-<!-- === End Google Drive Backup + Auto-Restore === -->
-
-
 </body>
 </html>
