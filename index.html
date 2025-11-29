@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Aruns E-Services Portal — Final</title>
+  <title>Aruns E-Services Portal — Updated Final Version</title>
+
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4fb;color:#333;min-height:100vh;display:flex;flex-direction:column;}
+
     /* LOGIN */
     #loginPage{display:flex;justify-content:center;align-items:center;flex:1;background:linear-gradient(120deg,#cfd6dd,#d5e0e9);padding:30px;}
     .login-box{background:#fff;padding:26px;border-radius:10px;box-shadow:0 0 20px rgba(0,0,0,0.18);width:340px;text-align:center;}
@@ -31,7 +33,8 @@
       color:#e8f7ff;
       font-size:13px;
     }
-    .container{display:grid;grid-template-columns:250px 1fr;flex:1;height:calc(100vh - 160px);background:transparent;}
+
+    .container{display:grid;grid-template-columns:250px 1fr;flex:1;height:calc(100vh - 160px);}
     .sidebar{background:#e9eff7;border-right:2px solid #c3cbe0;padding:12px;overflow-y:auto;}
     .sidebar h3{color:#003366;margin-bottom:10px;font-size:16px;}
     .folder>div{cursor:pointer;padding:8px 10px;border-radius:6px;display:flex;align-items:center;justify-content:space-between;color:#003366;}
@@ -39,45 +42,51 @@
     .folder.open>ul{display:block;}
     .folder ul li a{text-decoration:none;color:#003366;display:block;padding:6px 8px;border-radius:6px;}
     .folder ul li a:hover{background:#c7d7f0;}
+
     main{background:#fff;}
     iframe{width:100%;height:100%;border:none;}
-    /* single footer inside mainPage */
-    footer.main-footer{background:#002b5c;color:#fff;text-align:center;font-size:13px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
-    .footer-left{display:flex;align-items:center;gap:12px;}
-    .footer-actions button{padding:8px 12px;margin-left:8px;background:#004b8d;color:#fff;border:none;border-radius:6px;cursor:pointer;}
-    .footer-actions button.restore{background:#0077cc;}
-    .footer-actions button:disabled{opacity:0.5;cursor:not-allowed;}
 
-    /* Toast */
-    #toast {
-      visibility:hidden;
-      min-width:220px;
-      max-width:360px;
-      background:linear-gradient(135deg,#003366,#00aaff);
-      color:#fff;
-      text-align:center;
-      border-radius:8px;
-      padding:12px 18px;
-      position:fixed;
-      top:20px;
-      right:20px;
-      font-size:14px;
-      box-shadow:0 0 12px rgba(0,255,255,0.18);
-      opacity:0;
-      transform:translateY(-10px);
-      transition:opacity 0.35s, transform 0.35s;
-      z-index:9999;
+    footer.main-footer{background:#002b5c;color:#fff;text-align:center;font-size:13px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .footer-actions button{padding:8px 12px;margin-left:8px;background:#004b8d;color:#fff;border:none;border-radius:6px;cursor:pointer;}
+    .footer-actions button.total{background:#006400;}
+
+    /* POPUP */
+    #confirmPopup{
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background:rgba(0,0,0,0.55);display:none;
+      justify-content:center;align-items:center;z-index:99999;
     }
+    #confirmBox{
+      background:white;width:320px;padding:22px;border-radius:12px;
+      text-align:center;box-shadow:0 0 25px rgba(0,0,0,0.25);
+      animation:pop .25s ease-out;
+    }
+    @keyframes pop{
+      from{transform:scale(.7);opacity:0;}
+      to{transform:scale(1);opacity:1;}
+    }
+    #confirmBox h3{margin-bottom:14px;color:#222;}
+    .popup-btn{
+      padding:8px 14px;border:none;border-radius:6px;margin:6px;font-size:15px;cursor:pointer;
+    }
+    .yes-btn{background:#0a7f00;color:#fff;}
+    .no-btn{background:#9b0000;color:#fff;}
+
+    /* TOAST */
+    #toast {visibility:hidden;min-width:220px;max-width:420px;background:linear-gradient(135deg,#003366,#00aaff);color:#fff;text-align:center;border-radius:8px;padding:12px 18px;position:fixed;top:20px;right:20px;font-size:14px;box-shadow:0 0 12px rgba(0,255,255,0.18);opacity:0;transform:translateY(-10px);transition:opacity 0.35s, transform 0.35s;z-index:9999;}
     #toast.show {visibility:visible;opacity:1;transform:translateY(0);}
-    /* Dashboard card styling (iframe content has its own) */
-    @media (max-width:800px){
-      .container{grid-template-columns:1fr;}
-      .sidebar{height:auto;order:2;}
-      main{order:1;height:60vh;}
-    }
   </style>
 </head>
 <body>
+
+<!-- POPUP -->
+<div id="confirmPopup">
+  <div id="confirmBox">
+    <h3 id="confirmMsg">Are you sure?</h3>
+    <button class="popup-btn yes-btn" id="popupYes">Yes</button>
+    <button class="popup-btn no-btn" id="popupNo">Cancel</button>
+  </div>
+</div>
 
 <!-- LOGIN PAGE -->
 <div id="loginPage">
@@ -90,23 +99,25 @@
   </div>
 </div>
 
-<!-- MAIN PAGE -->
+<!-- MAIN -->
 <div id="mainPage" aria-hidden="true">
+
   <header>
     <div style="display:flex;align-items:center;gap:12px;">
-      <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Bajaj_logo.jpg" alt="Bajaj Logo">
-      <div class="time-box" aria-hidden="false">
-        <div class="eng" id="engTime">Loading...</div>
-        <div class="nep" id="nepTime">नेपाली मिति...</div>
+      <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Bajaj_logo.jpg">
+      <div class="time-box">
+        <div id="engTime">Loading...</div>
+        <div id="nepTime">नेपाली मिति...</div>
       </div>
     </div>
 
     <div class="title">
-      <h1>🌐 𝗝𝗔𝗕𝗘𝗚𝗨𝗛𝗔𝗡𝗚 𝗠𝗨𝗟𝗧𝗜 𝗣𝗨𝗥𝗣𝗢𝗦𝗘 𝗖𝗢𝗠𝗣𝗔𝗬 𝗟𝘁𝗱.🌐</h1>
-      <p style="font-size:12px;margin-top:4px;opacity:0.9;">𝐃𝐚𝐭𝐚𝐛𝐚𝐬𝐞 𝐖𝐢𝐭𝐡 𝐂𝐥𝐨𝐮𝐝 𝐃𝐞𝐩𝐚𝐫𝐭𝐦𝐞𝐧𝐭, 𝐆𝐨𝐯𝐞𝐫𝐧𝐦𝐞𝐧𝐭 𝐨𝐟 𝐍𝐞𝐩𝐚𝐥</p>
+      <h1>🌐 𝗝𝗔𝗕𝗘𝗚𝗨𝗛𝗔𝗡𝗚 𝗠𝗨𝗟𝗧𝗜 𝗣𝗨𝗥𝗣𝗢𝗦𝗘 𝗖𝗢𝗠𝗣𝗔𝗬 🌐</h1>
+      <p class="hint">Database With Cloud Department</p>
     </div>
-     <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Animated-nepal-flag-image-0007.gif" alt="Nepal Flag">
-     <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Small_gif.gif" alt="IRD Logo" style="height:60px;">
+
+    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Animated-nepal-flag-image-0007.gif">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Small_gif.gif" style="height:60px;">
   </header>
 
   <div class="container">
@@ -114,327 +125,178 @@
       <h3>𝐎𝐧𝐥𝐢𝐧𝐞 𝐄-𝐒𝐞𝐫𝐯𝐢𝐜𝐞𝐬</h3>
 
       <div class="folder">
-        <div onclick="toggleFolder(this)">📁 𝐂𝐚𝐬𝐡 𝐑𝐞𝐜𝐨𝐫𝐝𝐬 <span style="opacity:0.6;font-size:13px;">▸</span></div>
+        <div onclick="toggleFolder(this)">📁 Cash Records <span>▸</span></div>
         <ul>
-          <li><a href="#" onclick="loadEsewaForm();return false;">🗁 Cash Transaction </a></li>
-          <li><a href="#" onclick="loadEsewaForm();return false;">🗁 Statement Report </a></li>
+         <li><a href="#" onclick="loadEsewaForm();return false;">🗁 Cash Transaction</a></li>
+         <li><a href="#" onclick="loadEsewaForm();return false;">🗁 Statement Report</a></li>
         </ul>
       </div>
 
       <div class="folder">
-        <div onclick="toggleFolder(this)">📁 𝐈𝐧𝐪𝐮𝐢𝐫𝐲-𝐅𝐨𝐨𝐭𝐟𝐚𝐥𝐥 <span style="opacity:0.6;font-size:13px;">▸</span></div>
+        <div onclick="toggleFolder(this)">📁 Inquiry-Footfall <span>▸</span></div>
         <ul>
-         <li><a href="Online E-Services/Collector/collector-details.html" target="contentFrame">🗁 Inquiry Form</a></li>    
-         <li><a href="Online E-Services/Collector/collector-download.html" target="contentFrame">🗁 Record Download</a></li>
+          <li><a href="Online E-Services/Collector/collector-details.html" target="contentFrame">🗁 Inquiry Form</a></li>
+          <li><a href="Online E-Services/Collector/collector-download.html" target="contentFrame">🗁 Record Download</a></li>
         </ul>
       </div>
 
       <div class="folder">
-        <div onclick="toggleFolder(this)">📁 𝐕𝐞𝐡𝐢𝐜𝐥𝐞 𝐎𝐫𝐝𝐞𝐫 𝐑𝐞𝐜𝐨𝐫𝐝 <span style="opacity:0.6;font-size:13px;">▸</span></div>
+        <div onclick="toggleFolder(this)">📁 Vehicle Order Record <span>▸</span></div>
         <ul>
-          <li><a href="Online E-Services/Banks/bank-statement-update.html" target="contentFrame">🗁 Order Updates</a></li>   
-          <li><a href="Online E-Services/Banks/statement-download.html" target="contentFrame">🗁 Order Statement </a></li>
+          <li><a href="Online E-Services/Banks/bank-statement-update.html" target="contentFrame">🗁 Order Updates</a></li>
+          <li><a href="Online E-Services/Banks/statement-download.html" target="contentFrame">🗁 Order Statement</a></li>
         </ul>
       </div>
+
     </div>
 
     <main>
-      <iframe name="contentFrame" id="contentFrame" title="Content Frame"></iframe>
+      <iframe id="contentFrame" name="contentFrame"></iframe>
     </main>
   </div>
 
   <footer class="main-footer">
     <div class="footer-left">
       <div>© 2025 Database With Cloud Department</div>
-      <div style="font-size:12px;opacity:0.85;margin-left:8px;">(Logged in as <strong id="whoami">admin</strong>)</div>
+      <div style="font-size:12px;opacity:0.85;">(Logged in as <strong id="whoami">admin</strong>)</div>
     </div>
 
-    <div class="footer-actions" aria-live="polite">
-      <button id="backupBtn" title="Create Backup">💾 Backup</button>
-      <button id="restoreBtn" class="restore" title="Restore from Backup">♻️ Restore</button>
-      <button id="logoutBtn" style="background:#b02a2a;margin-left:8px;">🔒 Logout</button>
+    <div class="footer-actions">
+      <!-- ONLY TOTAL BACKUP / RESTORE -->
+      <button id="totalBackupBtn" class="total">📦 Total Backup</button>
+      <button id="totalRestoreBtn" class="total">🧭 Total Restore</button>
+      <button id="logoutBtn" style="background:#b02a2a;">🔒 Logout</button>
     </div>
   </footer>
+
 </div>
 
-<!-- TOAST -->
-<div id="toast" role="status" aria-live="polite">Status</div>
+<div id="toast">Status</div>
 
 <script>
-/* ===========================
-   Utility & App Constants
-   =========================== */
-const APP_KEYS = [
-  'esewa_entries_v1',
-  'collectorData_v_final',
-  'bank_statement_html_v2'
-];
-// Some users might store plain objects/strings; ensure restore handles that safely.
+/* Popup handler */
+let popupAction = null;
+function askConfirm(msg, action){
+  popupAction = action;
+  document.getElementById("confirmMsg").textContent = msg;
+  document.getElementById("confirmPopup").style.display="flex";
+}
+document.getElementById("popupYes").onclick = ()=>{
+  document.getElementById("confirmPopup").style.display="none";
+  if(popupAction) popupAction();
+};
+document.getElementById("popupNo").onclick = ()=>{
+  document.getElementById("confirmPopup").style.display="none";
+};
 
-/* ===========================
-   Toast helper
-   =========================== */
-function showToast(msg, ms=3200){
-  const t=document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), ms);
+/* Toast */
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3000);
 }
 
-/* ===========================
-   LOGIN / LOGOUT
-   =========================== */
-document.getElementById('loginBtn').addEventListener('click', ()=>{
+/* LOGIN */
+document.getElementById('loginBtn').onclick = ()=>{
   const u=document.getElementById('username').value.trim();
   const p=document.getElementById('password').value.trim();
-  const error=document.getElementById('error');
-  if(u.toLowerCase()==='admin' && p==='Admin123'){
-    document.getElementById('loginPage').style.display='none';
-    document.getElementById('mainPage').style.display='flex';
-    document.getElementById('mainPage').setAttribute('aria-hidden','false');
-    document.getElementById('whoami').textContent = u;
-    showToast("✅ Welcome, Admin!");
+  if(u.toLowerCase()==="admin" && p==="Admin123"){
+    loginPage.style.display="none";
+    mainPage.style.display="flex";
+    whoami.textContent=u;
+    showToast("Welcome!");
     loadDashboard();
   } else {
-    error.style.display='block';
-    setTimeout(()=>error.style.display='none',3000);
+    error.style.display="block";
+    setTimeout(()=>error.style.display="none",3000);
   }
-});
-document.getElementById('logoutBtn').addEventListener('click', ()=>{
-  // simple logout - show login again
-  document.getElementById('username').value='';
-  document.getElementById('password').value='';
-  document.getElementById('mainPage').style.display='none';
-  document.getElementById('loginPage').style.display='flex';
-  document.getElementById('mainPage').setAttribute('aria-hidden','true');
-  document.getElementById('contentFrame').srcdoc = '';
-  showToast("🔒 Logged out");
-});
+};
 
-/* ===========================
-   Header Clock & Nepali date
-   =========================== */
+logoutBtn.onclick = ()=>{
+  mainPage.style.display="none";
+  loginPage.style.display="flex";
+  contentFrame.srcdoc="";
+};
+
+/* Sidebar */
+function toggleFolder(e){ e.parentElement.classList.toggle("open"); }
+
+/* Dummy loaders */
+function loadEsewaForm(){
+  contentFrame.srcdoc="<h2 style='padding:20px;'>Esewa Form Placeholder</h2>";
+}
+
+/* Dashboard */
+function safeParseLocal(k){
+  try{
+    let r=localStorage.getItem(k);
+    if(!r) return [];
+    const p=JSON.parse(r);
+    return Array.isArray(p)?p:[p];
+  }catch(e){return [];}
+}
+function loadDashboard(){
+  contentFrame.srcdoc="<h2 style='padding:20px;text-align:center;'>Dashboard Loaded</h2>";
+}
+
+/* TOTAL BACKUP (single file overwrite) */
+function totalBackupNow(){
+  try{
+    const out={_meta:{date:new Date().toISOString()}};
+    for(let i=0;i<localStorage.length;i++){
+      let k=localStorage.key(i);
+      out[k]=localStorage.getItem(k);
+    }
+    const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="Backup.json"; 
+    a.click();
+    showToast("Backup.json successfully overwritten.");
+  }catch(e){
+    showToast("Backup failed.");
+  }
+}
+
+/* TOTAL RESTORE */
+function totalRestoreNow(){
+  const inp=document.createElement("input");
+  inp.type="file";
+  inp.accept="application/json";
+  inp.onchange=e=>{
+    const file=e.target.files[0];
+    if(!file) return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        localStorage.clear();
+        for(const k in data){ localStorage.setItem(k,data[k]); }
+        showToast("Total Restore Completed.");
+        loadDashboard();
+      }catch{
+        showToast("Invalid File.");
+      }
+    };
+    r.readAsText(file);
+  };
+  inp.click();
+}
+
+/* Attach with confirmation popup */
+totalBackupBtn.onclick = ()=> askConfirm("Create Backup.json and overwrite old file?", totalBackupNow);
+totalRestoreBtn.onclick = ()=> askConfirm("Restore all data from selected Backup.json?", totalRestoreNow);
+
+/* Clock */
 function updateHeaderTime(){
   const now=new Date();
-  const eng=now.toLocaleString('en-GB',{weekday:'short',year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  document.getElementById('engTime').textContent=eng;
-  document.getElementById('nepTime').textContent=getNepaliDateTime(now);
-}
-function getNepaliDateTime(date){
-  const npMonths=['बैशाख','जेठ','असार','साउन','भदौ','असोज','कात्तिक','मंसिर','पुष','माघ','फागुन','चैत'];
-  const npNumbers={'0':'०','1':'१','2':'२','3':'३','4':'४','5':'५','6':'६','7':'७','8':'८','9':'९'};
-  let y=date.getFullYear()+57;
-  let m=(date.getMonth()+1+8)%12;if(m===0)m=12;
-  let d=date.getDate();
-  const npDate=`${npMonths[m-1]} ${d}, ${y}`;
-  const h=String(date.getHours()).padStart(2,'0').replace(/[0-9]/g,d=>npNumbers[d]);
-  const mi=String(date.getMinutes()).padStart(2,'0').replace(/[0-9]/g,d=>npNumbers[d]);
-  const s=String(date.getSeconds()).padStart(2,'0').replace(/[0-9]/g,d=>npNumbers[d]);
-  return npDate.replace(/[0-9]/g,d=>npNumbers[d])+" ("+h+":"+mi+":"+s+")";
+  engTime.textContent=now.toLocaleString();
+  nepTime.textContent="नेपाली मिति " + now.getSeconds();
 }
 setInterval(updateHeaderTime,1000);
 updateHeaderTime();
-
-/* ===========================
-   Sidebar toggles & iframe loaders
-   =========================== */
-function toggleFolder(el){ el.parentElement.classList.toggle('open'); }
-
-function loadEsewaForm(){ 
-  const f=document.getElementById('contentFrame');
-  f.srcdoc = `
-    <html><head><meta charset="utf-8"><title>Esewa Form</title>
-    <style>body{font-family:Segoe UI;padding:20px;background:linear-gradient(135deg,#f6fbff,#ffffff);}h3{color:#003366}</style>
-    </head><body>
-    <h3>Esewa Form Section</h3>
-    <p>Existing code placeholder — integrate your existing form here.</p>
-    </body></html>`;
-}
-function loadCollectorDetails(){
-  const f=document.getElementById('contentFrame');
-  f.srcdoc = `<html><head><meta charset="utf-8"><title>Collector Details</title>
-    <style>body{font-family:Segoe UI;padding:18px}</style></head><body>
-    <h3>Collector Details</h3><p>Collector details placeholder.</p>
-    </body></html>`;
-}
-function loadCollectorDownload(){
-  const f=document.getElementById('contentFrame');
-  f.srcdoc = `<html><head><meta charset="utf-8"><title>Collector Download</title>
-    <style>body{font-family:Segoe UI;padding:18px}</style></head><body>
-    <h3>Collector Record Download</h3><p>Download interface placeholder.</p>
-    </body></html>`;
-}
-function loadBankUpdate(){
-  const f=document.getElementById('contentFrame');
-  f.srcdoc = `<html><head><meta charset="utf-8"><title>Bank Update</title>
-    <style>body{font-family:Segoe UI;padding:18px}</style></head><body>
-    <h3>Bank Update</h3><p>Bank update placeholder.</p>
-    </body></html>`;
-}
-function loadStatementDownload(){
-  const f=document.getElementById('contentFrame');
-  f.srcdoc = `<html><head><meta charset="utf-8"><title>Statement Download</title>
-    <style>body{font-family:Segoe UI;padding:18px}</style></head><body>
-    <h3>Statement Download</h3><p>Statement download placeholder.</p>
-    </body></html>`;
-}
-
-/* ===========================
-   DASHBOARD (loads into iframe)
-   =========================== */
-function safeParseLocal(key){
-  try{
-    const raw = localStorage.getItem(key);
-    if(raw === null) return [];
-    const parsed = JSON.parse(raw);
-    // If parsed is array-like, return as array
-    if(Array.isArray(parsed)) return parsed;
-    // If it's an object with values, convert to array of entries
-    if(parsed && typeof parsed === 'object') return Object.values(parsed);
-    // fallback - wrap primitive
-    return [parsed];
-  }catch(e){
-    return [];
-  }
-}
-function loadDashboard(){
-  const f=document.getElementById('contentFrame');
-  const esewa = safeParseLocal('esewa_entries_v1');
-  const collector = safeParseLocal('collectorData_v_final');
-  const bank = safeParseLocal('bank_statement_html_v2');
-
-  // Build simple dashboard HTML and inject counts
-  const doc = `
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>Dashboard</title>
-      <style>body{font-family:Segoe UI;padding:30px;background:linear-gradient(135deg,#dfe9f3,#ffffff);}h2{text-align:center;color:#002b5c;margin-bottom:20px;} .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;} .card{background:linear-gradient(135deg,#004e92,#000428);color:#fff;border-radius:12px;padding:18px;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,0.15);} .card h3{margin-bottom:10px;font-size:18px;} .num{font-size:28px;font-weight:bold;color:#00e0ff;text-shadow:0 0 10px rgba(0,255,255,0.2);} .muted{font-size:13px;opacity:0.85;margin-top:8px;}</style>
-    </head>
-    <body>
-      <h2>📊 Dashboard Summary</h2>
-      <div class="cards">
-        <div class="card"><h3>Esewa Records</h3><div class="num">${esewa.length}</div><div class="muted">Key: esewa_entries_v1</div></div>
-        <div class="card"><h3>Collector Entries</h3><div class="num">${collector.length}</div><div class="muted">Key: collectorData_v_final</div></div>
-        <div class="card"><h3>Bank Statements</h3><div class="num">${bank.length}</div><div class="muted">Key: bank_statement_html_v2</div></div>
-      </div>
-      <script>
-        // allow parent to call functions if needed
-        window.addEventListener('message', e => {
-          if(e.data && e.data.type === 'refreshCounts'){
-            location.reload();
-          }
-        });
-      <\/script>
-    </body>
-    </html>
-  `;
-  f.srcdoc = doc;
-}
-
-/* ===========================
-   BACKUP / RESTORE
-   =========================== */
-
-// Create a backup JSON containing only APP_KEYS (present or empty)
-function backupData(){
-  try{
-    const backup = {};
-    APP_KEYS.forEach(k=>{
-      const raw = localStorage.getItem(k);
-      // keep as stored (string or null). If null, store empty array
-      if(raw === null){
-        backup[k] = []; // ensure shape is array for missing keys
-      } else {
-        try{
-          // attempt to parse to store as structured JSON in file
-          backup[k] = JSON.parse(raw);
-        }catch(e){
-          // store raw string if not JSON
-          backup[k] = raw;
-        }
-      }
-    });
-
-    const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'Backup.json';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    showToast("✅ Backup created (Backup.json)");
-  }catch(err){
-    console.error('Backup error', err);
-    showToast("❌ Backup failed");
-  }
-}
-
-// Restore: open file picker, parse, set localStorage keys (overwrite), then refresh UI
-function restoreData(){
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'application/json,application/JSON';
-  input.onchange = e => {
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try{
-        const data = JSON.parse(ev.target.result);
-        // Only set keys that are in APP_KEYS to avoid accidental overwrite
-        APP_KEYS.forEach(k=>{
-          if(typeof data[k] !== 'undefined'){
-            // store as stringified JSON so safeParseLocal works
-            try{
-              localStorage.setItem(k, JSON.stringify(data[k]));
-            }catch(setErr){
-              // fallback to storing as string
-              localStorage.setItem(k, String(data[k]));
-            }
-          } else {
-            // if backup lacked key, ensure key exists as empty array string
-            localStorage.setItem(k, JSON.stringify([]));
-          }
-        });
-        showToast("♻️ Restore completed");
-        // Refresh dashboard (iframe) by reloading its srcdoc
-        // If dashboard is open, reload; else load dashboard
-        loadDashboard();
-        // Also send a message to iframe to refresh in case the iframe is same origin (it is srcdoc)
-        const f = document.getElementById('contentFrame');
-        try{
-          f.contentWindow.postMessage({type:'refreshCounts'}, '*');
-        }catch(ignore){}
-      }catch(err){
-        console.error('Restore parse error', err);
-        showToast("❌ Restore failed (invalid file)");
-      }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
-
-/* Attach to footer buttons */
-document.getElementById('backupBtn').addEventListener('click', backupData);
-document.getElementById('restoreBtn').addEventListener('click', restoreData);
-
-/* ===========================
-   Init: default dashboard content
-   =========================== */
-// prefill localStorage with arrays if not present (safe default, optional)
-(function ensureDefaults(){
-  APP_KEYS.forEach(k=>{
-    if(localStorage.getItem(k) === null){
-      // leave empty by default to avoid creating unnecessary persisted data unless user wants
-      // but for stable UI we can set [] so counts show 0 consistently
-      localStorage.setItem(k, JSON.stringify([]));
-    }
-  });
-})();
 </script>
+
 </body>
 </html>
